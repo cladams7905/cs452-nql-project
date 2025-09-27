@@ -2,130 +2,28 @@
 
 A Node.js server with MySQL database for managing user interview data, featuring a ChatGPT integration for querying the database using natural language.
 
-## Features
+## Schema
 
-- MySQL database with comprehensive user interview schema
-- Express.js REST API
-- ChatGPT integration for natural language queries
-- Docker containerization
-- Pre-loaded sample data
-- Simple web interface for testing
+![img](user-interviews-schema.png)
 
-## Quick Start with Docker
+## Example Question & Response
 
-1. **Set up your OpenAI API key** (required for ChatGPT functionality):
-   ```bash
-   cp .env.example .env
-   # Edit .env and add your OpenAI API key
-   ```
+**Question**: How many meetings have been conducted?
 
-2. **Start the application**:
-   ```bash
-   docker-compose up --build
-   ```
+**Answer**: "There are 4 meetings in the database. These meetings cover a range of topics from product discovery interviews to feature demos and strategic planning sessions. Each meeting involved different participants and discussions tailored to their specific agendas."
 
-3. **Access the application**:
-   - Web interface: http://localhost:3000
-   - API health check: http://localhost:3000/health
+**Other example questions:**
 
-## Manual Setup (without Docker)
+- What are the main pain points discussed in the meetings?
+- Who are the participants and what are their roles?
+- What action items are still pending?
+- Which products were mentioned most frequently?
+- What insights can you provide about user experience feedback?
 
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+## Prompting Strategies
 
-2. **Set up MySQL database**:
-   - Install MySQL 8.0
-   - Create database: `CREATE DATABASE user_interviews;`
-   - Run the schema: `mysql -u root -p user_interviews < user-interviews.sql`
+To ensure optimal reponse quality, I included this clarification in my prompt:
 
-3. **Configure environment**:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your database credentials and OpenAI API key
-   ```
+"IMPORTANT: Use the actual data provided above to answer questions. Do NOT suggest SQL queries. Provide direct answers with specific numbers, names, and insights from the actual data. Be conversational and insightful, not technical."
 
-4. **Load sample data**:
-   ```bash
-   node seed-data.js
-   ```
-
-5. **Start the server**:
-   ```bash
-   npm start
-   ```
-
-## API Endpoints
-
-### Database Endpoints
-- `GET /health` - Health check
-- `GET /api/schema` - Get database schema information
-- `GET /api/data/:table` - Get all data from a specific table
-
-### ChatGPT Integration
-- `POST /api/chat` - Send a question about the database
-  ```json
-  {
-    "question": "How many participants are in the database?"
-  }
-  ```
-
-## Database Schema
-
-The database includes the following tables:
-- `participants` - Interview participants with demographics
-- `meetings` - Meeting/interview sessions
-- `meeting_participants` - Many-to-many relationship for meeting attendees
-- `discussion_points` - Key topics discussed in meetings
-- `questions` - Q&A pairs from interviews
-- `action_items` - Follow-up tasks and their status
-- `products` - Products/tools mentioned in interviews
-- `meeting_products` - Products discussed in specific meetings
-
-## Sample Data
-
-The database comes pre-loaded with realistic sample data including:
-- 5 participants (Product Managers, Engineers, Designers, etc.)
-- 4 meetings (Discovery interviews, demos, reviews)
-- Discussion points about analytics, API integration, and UX
-- Questions and answers from interviews
-- Action items with different statuses
-- Product mentions and context
-
-## Example ChatGPT Queries
-
-Try asking questions like:
-- "How many meetings have been conducted?"
-- "What are the main pain points discussed?"
-- "Which participants are from San Francisco?"
-- "What action items are still pending?"
-- "What products were mentioned in the analytics discussion?"
-
-## Environment Variables
-
-- `DB_HOST` - Database host (default: localhost)
-- `DB_USER` - Database username (default: root)
-- `DB_PASSWORD` - Database password (default: rootpassword)
-- `DB_NAME` - Database name (default: user_interviews)
-- `DB_PORT` - Database port (default: 3306)
-- `OPENAI_API_KEY` - Your OpenAI API key (required)
-- `PORT` - Server port (default: 3000)
-
-## Files Structure
-
-```
-├── server.js              # Main Express server
-├── database.js            # Database connection utilities
-├── seed-data.js           # Sample data generator
-├── user-interviews.sql    # Database schema
-├── docker-compose.yml     # Docker services configuration
-├── Dockerfile            # Node.js app container
-├── public/
-│   └── index.html        # Simple web interface
-└── package.json          # Node.js dependencies
-```
-
-## Note
-
-Remember to add your OpenAI API key to the `.env` file for the ChatGPT integration to work. Without it, the `/api/chat` endpoint will return an error.
+This addition made the responses much more consistent and helpful.
