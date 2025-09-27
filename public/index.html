@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Interviews Database Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .chat-interface {
+            margin-top: 20px;
+        }
+        .question-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .send-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .send-button:hover {
+            background-color: #0056b3;
+        }
+        .send-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+        }
+        .example-questions {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7ef;
+            border-radius: 4px;
+        }
+        .example-questions h3 {
+            margin-top: 0;
+            color: #155724;
+        }
+        .example-questions ul {
+            margin: 10px 0;
+        }
+        .example-questions li {
+            margin: 5px 0;
+            cursor: pointer;
+            color: #007bff;
+        }
+        .example-questions li:hover {
+            text-decoration: underline;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Interviews Database Chat</h1>
+        <p>Ask questions about the user interviews database. The AI assistant can help you understand the data, find insights, and answer questions about meetings, participants, and discussions.</p>
+
+        <div class="chat-interface">
+            <input type="text" id="questionInput" class="question-input" placeholder="Ask a question about the database..." />
+            <button id="sendButton" class="send-button" onclick="sendQuestion()">Send Question</button>
+
+            <div id="response" class="response" style="display: none;"></div>
+        </div>
+
+        <div class="example-questions">
+            <h3>Example Questions:</h3>
+            <ul>
+                <li onclick="setQuestion('How many meetings have been conducted?')">How many meetings have been conducted?</li>
+                <li onclick="setQuestion('What are the main pain points discussed in the meetings?')">What are the main pain points discussed in the meetings?</li>
+                <li onclick="setQuestion('Who are the participants and what are their roles?')">Who are the participants and what are their roles?</li>
+                <li onclick="setQuestion('What action items are still pending?')">What action items are still pending?</li>
+                <li onclick="setQuestion('Which products were mentioned most frequently?')">Which products were mentioned most frequently?</li>
+                <li onclick="setQuestion('What insights can you provide about user experience feedback?')">What insights can you provide about user experience feedback?</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function setQuestion(question) {
+            document.getElementById('questionInput').value = question;
+        }
+
+        function sendQuestion() {
+            const question = document.getElementById('questionInput').value.trim();
+            if (!question) return;
+
+            const sendButton = document.getElementById('sendButton');
+            const responseDiv = document.getElementById('response');
+
+            sendButton.disabled = true;
+            sendButton.textContent = 'Sending...';
+            responseDiv.style.display = 'block';
+            responseDiv.innerHTML = '<div class="loading">Thinking...</div>';
+
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    responseDiv.innerHTML = `<strong>Error:</strong> ${data.error}`;
+                } else {
+                    responseDiv.innerHTML = `
+                        <strong>Question:</strong> ${data.question}<br><br>
+                        <strong>Answer:</strong> ${data.answer}
+                    `;
+                }
+            })
+            .catch(error => {
+                responseDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+            })
+            .finally(() => {
+                sendButton.disabled = false;
+                sendButton.textContent = 'Send Question';
+            });
+        }
+
+        // Allow sending question with Enter key
+        document.getElementById('questionInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
